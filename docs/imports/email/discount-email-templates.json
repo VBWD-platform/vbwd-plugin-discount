@@ -1,0 +1,16 @@
+[
+  {
+    "event_type": "coupon.applied",
+    "subject": "Coupon {{ coupon_code }} applied — you saved {{ discount_amount }}!",
+    "html_body": "<h1>Coupon applied!</h1><p>Hi {{ user_name }},</p><p>Coupon <strong>{{ coupon_code }}</strong> has been applied to your order.</p><p>Discount: <strong>{{ discount_amount }} {{ currency }}</strong></p><p>Invoice: {{ invoice_number }}</p>",
+    "text_body": "Hi {{ user_name }},\n\nCoupon {{ coupon_code }} applied.\nDiscount: {{ discount_amount }} {{ currency }}\nInvoice: {{ invoice_number }}",
+    "is_active": true
+  },
+  {
+    "event_type": "coupon.expiring_soon",
+    "subject": "Your coupon {{ coupon_code }} expires soon!",
+    "html_body": "<h1>Don't miss out!</h1><p>Hi {{ user_name }},</p><p>Your coupon <strong>{{ coupon_code }}</strong> ({{ discount_description }}) expires on {{ expires_at }}.</p><p><a href=\"{{ shop_url }}\">Shop now</a></p>",
+    "text_body": "Hi {{ user_name }},\n\nYour coupon {{ coupon_code }} expires on {{ expires_at }}.\n\nShop: {{ shop_url }}",
+    "is_active": true
+  }
+]

@@ -1,0 +1,1 @@
+"""Discount plugin test configuration."""

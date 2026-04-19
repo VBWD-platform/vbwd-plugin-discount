@@ -1,0 +1,11 @@
+{
+  "name": "discount",
+  "display_name": "Discounts & Coupons",
+  "version": "0.1.0",
+  "description": "Unified discount & coupon system — works with subscriptions, ecommerce, and bookings",
+  "author": "VBWD",
+  "settings": {
+    "max_coupons_per_discount": 100,
+    "default_coupon_length": 8
+  }
+}

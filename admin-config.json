@@ -1,0 +1,10 @@
+{
+  "name": "discount",
+  "display_name": "Discounts & Coupons",
+  "icon": "tag",
+  "admin_section": "sales",
+  "nav_items": [
+    { "label": "Discounts", "path": "/admin/discounts", "icon": "percent" },
+    { "label": "Coupons", "path": "/admin/coupons", "icon": "ticket" }
+  ]
+}
