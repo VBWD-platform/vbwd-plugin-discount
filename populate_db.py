@@ -10,7 +10,11 @@ logger = logging.getLogger(__name__)
 
 def populate(app=None):
     """Populate discount demo data (idempotent)."""
-    from plugins.discount.discount.models.discount import Discount, DiscountType, DiscountScope
+    from plugins.discount.discount.models.discount import (
+        Discount,
+        DiscountType,
+        DiscountScope,
+    )
     from plugins.discount.discount.models.coupon import Coupon
 
     created_count = 0
@@ -77,7 +81,9 @@ def populate(app=None):
 
     discount_map = {}
     for discount_data in discounts_data:
-        existing = db.session.query(Discount).filter_by(slug=discount_data["slug"]).first()
+        existing = (
+            db.session.query(Discount).filter_by(slug=discount_data["slug"]).first()
+        )
         if not existing:
             discount = Discount(id=uuid4(), **discount_data)
             db.session.add(discount)
@@ -156,7 +162,10 @@ def _populate_email_templates():
 
     templates_path = os.path.join(
         os.path.dirname(__file__),
-        "docs", "imports", "email", "discount-email-templates.json",
+        "docs",
+        "imports",
+        "email",
+        "discount-email-templates.json",
     )
     if not os.path.exists(templates_path):
         return
@@ -170,16 +179,22 @@ def _populate_email_templates():
         templates = json.load(fh)
 
     for tpl in templates:
-        existing = db.session.query(EmailTemplate).filter_by(event_type=tpl["event_type"]).first()
+        existing = (
+            db.session.query(EmailTemplate)
+            .filter_by(event_type=tpl["event_type"])
+            .first()
+        )
         if not existing:
-            db.session.add(EmailTemplate(
-                id=uuid4(),
-                event_type=tpl["event_type"],
-                subject=tpl["subject"],
-                html_body=tpl["html_body"],
-                text_body=tpl["text_body"],
-                is_active=tpl.get("is_active", True),
-            ))
+            db.session.add(
+                EmailTemplate(
+                    id=uuid4(),
+                    event_type=tpl["event_type"],
+                    subject=tpl["subject"],
+                    html_body=tpl["html_body"],
+                    text_body=tpl["text_body"],
+                    is_active=tpl.get("is_active", True),
+                )
+            )
             logger.info("[discount] Created email template: %s", tpl["event_type"])
 
     db.session.commit()

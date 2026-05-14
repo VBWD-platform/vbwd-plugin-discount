@@ -8,7 +8,10 @@ import pytest
 
 from plugins.discount.discount.interfaces import DiscountContext
 from plugins.discount.discount.registry import DiscountRuleRegistry
-from plugins.discount.discount.services.discount_service import DiscountService, CouponValidationError
+from plugins.discount.discount.services.discount_service import (
+    DiscountService,
+    CouponValidationError,
+)
 
 MOCK_NOW = datetime(2026, 3, 30, 12, 0, 0, tzinfo=timezone.utc)
 
@@ -40,7 +43,10 @@ def application_repo():
 
 @pytest.fixture(autouse=True)
 def mock_utcnow():
-    with patch("plugins.discount.discount.services.discount_service.utcnow", return_value=MOCK_NOW):
+    with patch(
+        "plugins.discount.discount.services.discount_service.utcnow",
+        return_value=MOCK_NOW,
+    ):
         yield
 
 
@@ -130,7 +136,9 @@ class TestValidateCoupon:
         with pytest.raises(CouponValidationError, match="limit reached"):
             service.validate_coupon("TEST20", uuid4(), Decimal("100.00"))
 
-    def test_per_user_limit_reached(self, service, coupon_repo, usage_repo, discount_repo):
+    def test_per_user_limit_reached(
+        self, service, coupon_repo, usage_repo, discount_repo
+    ):
         user_id = uuid4()
         coupon = _make_coupon(max_uses_per_user=1)
         discount = _make_discount(id=coupon.discount_id)
@@ -143,7 +151,9 @@ class TestValidateCoupon:
 
     def test_min_order_not_met(self, service, coupon_repo, discount_repo):
         coupon = _make_coupon()
-        discount = _make_discount(id=coupon.discount_id, min_order_amount=Decimal("50.00"))
+        discount = _make_discount(
+            id=coupon.discount_id, min_order_amount=Decimal("50.00")
+        )
         coupon_repo.find_by_code.return_value = coupon
         discount_repo.find_by_id.return_value = discount
 
@@ -152,7 +162,9 @@ class TestValidateCoupon:
 
 
 class TestRedeemCoupon:
-    def test_redeem_increments_counters(self, service, coupon_repo, usage_repo, discount_repo):
+    def test_redeem_increments_counters(
+        self, service, coupon_repo, usage_repo, discount_repo
+    ):
         coupon = _make_coupon(current_uses=5)
         discount = _make_discount(id=coupon.discount_id, current_uses=10)
         discount_repo.find_by_id.return_value = discount
@@ -181,8 +193,11 @@ class TestCalculateDiscount:
             unit_price=Decimal("50.00"),
             quantity=2,
             context=DiscountContext(
-                user_id=None, invoice_id=None, coupon_code=None,
-                cart_total=Decimal("100"), line_item_count=1,
+                user_id=None,
+                invoice_id=None,
+                coupon_code=None,
+                cart_total=Decimal("100"),
+                line_item_count=1,
             ),
         )
         assert amount == Decimal("20.00")
@@ -202,8 +217,11 @@ class TestCalculateDiscount:
             unit_price=Decimal("100.00"),
             quantity=1,
             context=DiscountContext(
-                user_id=None, invoice_id=None, coupon_code=None,
-                cart_total=Decimal("100"), line_item_count=1,
+                user_id=None,
+                invoice_id=None,
+                coupon_code=None,
+                cart_total=Decimal("100"),
+                line_item_count=1,
             ),
         )
         assert amount == Decimal("10.00")

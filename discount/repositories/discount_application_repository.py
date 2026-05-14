@@ -17,7 +17,9 @@ class DiscountApplicationRepository:
             .all()
         )
 
-    def find_by_discount(self, discount_id: UUID, limit: int = 50, offset: int = 0) -> list[DiscountApplication]:
+    def find_by_discount(
+        self, discount_id: UUID, limit: int = 50, offset: int = 0
+    ) -> list[DiscountApplication]:
         return (
             self._session.query(DiscountApplication)
             .filter_by(discount_id=discount_id)

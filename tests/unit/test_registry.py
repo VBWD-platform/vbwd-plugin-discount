@@ -3,7 +3,11 @@ from decimal import Decimal
 
 import pytest
 
-from plugins.discount.discount.interfaces import DiscountContext, DiscountScope, IDiscountRule
+from plugins.discount.discount.interfaces import (
+    DiscountContext,
+    DiscountScope,
+    IDiscountRule,
+)
 from plugins.discount.discount.registry import DiscountRuleRegistry
 
 
@@ -12,7 +16,14 @@ class FakeShopRule(IDiscountRule):
         return line_item_extra_data.get("plugin") == "shop"
 
     def evaluate(
-        self, line_item_type, line_item_extra_data, unit_price, quantity, discount_type, discount_value, context
+        self,
+        line_item_type,
+        line_item_extra_data,
+        unit_price,
+        quantity,
+        discount_type,
+        discount_value,
+        context,
     ):
         total = unit_price * quantity
         if discount_type == "PERCENTAGE":
@@ -28,7 +39,14 @@ class FakeSubscriptionRule(IDiscountRule):
         return line_item_type == "SUBSCRIPTION"
 
     def evaluate(
-        self, line_item_type, line_item_extra_data, unit_price, quantity, discount_type, discount_value, context
+        self,
+        line_item_type,
+        line_item_extra_data,
+        unit_price,
+        quantity,
+        discount_type,
+        discount_value,
+        context,
     ):
         total = unit_price * quantity
         if discount_type == "PERCENTAGE":

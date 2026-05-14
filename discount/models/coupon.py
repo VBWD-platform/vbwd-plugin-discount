@@ -24,7 +24,9 @@ class Coupon(BaseModel):
     starts_at = db.Column(db.DateTime, nullable=True)
     expires_at = db.Column(db.DateTime, nullable=True)
 
-    usages = db.relationship("CouponUsage", backref="coupon", lazy="selectin", cascade="all, delete-orphan")
+    usages = db.relationship(
+        "CouponUsage", backref="coupon", lazy="selectin", cascade="all, delete-orphan"
+    )
 
     def to_dict(self) -> dict:
         return {

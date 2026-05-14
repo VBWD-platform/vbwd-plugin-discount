@@ -13,9 +13,15 @@ from plugins.discount.discount.models.discount import Discount
 from plugins.discount.discount.models.discount_application import DiscountApplication
 from plugins.discount.discount.registry import DiscountRuleRegistry
 from plugins.discount.discount.repositories.coupon_repository import CouponRepository
-from plugins.discount.discount.repositories.coupon_usage_repository import CouponUsageRepository
-from plugins.discount.discount.repositories.discount_application_repository import DiscountApplicationRepository
-from plugins.discount.discount.repositories.discount_repository import DiscountRepository
+from plugins.discount.discount.repositories.coupon_usage_repository import (
+    CouponUsageRepository,
+)
+from plugins.discount.discount.repositories.discount_application_repository import (
+    DiscountApplicationRepository,
+)
+from plugins.discount.discount.repositories.discount_repository import (
+    DiscountRepository,
+)
 
 logger = logging.getLogger(__name__)
 

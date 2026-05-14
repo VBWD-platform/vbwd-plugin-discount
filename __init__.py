@@ -38,11 +38,31 @@ class DiscountPlugin(BasePlugin):
     @property
     def admin_permissions(self):
         return [
-            {"key": "discount.discounts.view", "label": "View discounts", "group": "Discounts"},
-            {"key": "discount.discounts.manage", "label": "Manage discounts", "group": "Discounts"},
-            {"key": "discount.coupons.view", "label": "View coupons", "group": "Discounts"},
-            {"key": "discount.coupons.manage", "label": "Manage coupons", "group": "Discounts"},
-            {"key": "discount.configure", "label": "Discount settings", "group": "Discounts"},
+            {
+                "key": "discount.discounts.view",
+                "label": "View discounts",
+                "group": "Discounts",
+            },
+            {
+                "key": "discount.discounts.manage",
+                "label": "Manage discounts",
+                "group": "Discounts",
+            },
+            {
+                "key": "discount.coupons.view",
+                "label": "View coupons",
+                "group": "Discounts",
+            },
+            {
+                "key": "discount.coupons.manage",
+                "label": "Manage coupons",
+                "group": "Discounts",
+            },
+            {
+                "key": "discount.configure",
+                "label": "Discount settings",
+                "group": "Discounts",
+            },
         ]
 
     def on_enable(self):
@@ -54,6 +74,7 @@ class DiscountPlugin(BasePlugin):
 
     def get_blueprint(self):
         from plugins.discount.discount.routes import discount_bp
+
         return discount_bp
 
     def get_url_prefix(self):

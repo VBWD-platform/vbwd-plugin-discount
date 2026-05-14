@@ -10,7 +10,9 @@ class CouponUsageRepository:
     def __init__(self, session: Session) -> None:
         self._session = session
 
-    def find_by_coupon(self, coupon_id: UUID, limit: int = 50, offset: int = 0) -> list[CouponUsage]:
+    def find_by_coupon(
+        self, coupon_id: UUID, limit: int = 50, offset: int = 0
+    ) -> list[CouponUsage]:
         return (
             self._session.query(CouponUsage)
             .filter_by(coupon_id=coupon_id)

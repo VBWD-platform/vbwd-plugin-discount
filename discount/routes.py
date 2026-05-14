@@ -6,13 +6,26 @@ from flask import Blueprint, jsonify, request, g
 from vbwd.extensions import db
 from vbwd.middleware.auth import require_auth, require_admin, require_permission
 
-from plugins.discount.discount.models.discount import Discount, DiscountType, DiscountScope
+from plugins.discount.discount.models.discount import (
+    Discount,
+    DiscountType,
+    DiscountScope,
+)
 from plugins.discount.discount.models.coupon import Coupon
-from plugins.discount.discount.repositories.discount_repository import DiscountRepository
+from plugins.discount.discount.repositories.discount_repository import (
+    DiscountRepository,
+)
 from plugins.discount.discount.repositories.coupon_repository import CouponRepository
-from plugins.discount.discount.repositories.coupon_usage_repository import CouponUsageRepository
-from plugins.discount.discount.repositories.discount_application_repository import DiscountApplicationRepository
-from plugins.discount.discount.services.discount_service import DiscountService, CouponValidationError
+from plugins.discount.discount.repositories.coupon_usage_repository import (
+    CouponUsageRepository,
+)
+from plugins.discount.discount.repositories.discount_application_repository import (
+    DiscountApplicationRepository,
+)
+from plugins.discount.discount.services.discount_service import (
+    DiscountService,
+    CouponValidationError,
+)
 
 discount_bp = Blueprint("discount", __name__)
 
@@ -100,8 +113,12 @@ def admin_create_discount():
         currency=data.get("currency"),
         scope=DiscountScope(data.get("scope", "GLOBAL")),
         conditions=data.get("conditions", {}),
-        min_order_amount=Decimal(str(data["min_order_amount"])) if data.get("min_order_amount") else None,
-        max_discount_amount=Decimal(str(data["max_discount_amount"])) if data.get("max_discount_amount") else None,
+        min_order_amount=Decimal(str(data["min_order_amount"]))
+        if data.get("min_order_amount")
+        else None,
+        max_discount_amount=Decimal(str(data["max_discount_amount"]))
+        if data.get("max_discount_amount")
+        else None,
         max_uses=data.get("max_uses"),
         max_uses_per_user=data.get("max_uses_per_user"),
         starts_at=data.get("starts_at"),
@@ -162,10 +179,14 @@ def admin_update_discount(discount_id):
     if "value" in data:
         discount.value = Decimal(str(data["value"]))
     if "min_order_amount" in data:
-        discount.min_order_amount = Decimal(str(data["min_order_amount"])) if data["min_order_amount"] else None
+        discount.min_order_amount = (
+            Decimal(str(data["min_order_amount"])) if data["min_order_amount"] else None
+        )
     if "max_discount_amount" in data:
         discount.max_discount_amount = (
-            Decimal(str(data["max_discount_amount"])) if data["max_discount_amount"] else None
+            Decimal(str(data["max_discount_amount"]))
+            if data["max_discount_amount"]
+            else None
         )
 
     repo.save(discount)
@@ -264,7 +285,14 @@ def admin_update_coupon(coupon_id):
     data = request.get_json() or {}
     if "code" in data:
         coupon.code = data["code"].strip().upper()
-    for field_name in ["discount_id", "max_uses", "max_uses_per_user", "is_active", "starts_at", "expires_at"]:
+    for field_name in [
+        "discount_id",
+        "max_uses",
+        "max_uses_per_user",
+        "is_active",
+        "starts_at",
+        "expires_at",
+    ]:
         if field_name in data:
             setattr(coupon, field_name, data[field_name])
 
