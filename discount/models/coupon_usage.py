@@ -8,11 +8,11 @@ from vbwd.utils.datetime_utils import utcnow
 class CouponUsage(BaseModel):
     """Record of a coupon being redeemed by a user on an invoice."""
 
-    __tablename__ = "coupon_usage"
+    __tablename__ = "discount_coupon_usage"
 
     coupon_id = db.Column(
         UUID(as_uuid=True),
-        db.ForeignKey("coupon.id", ondelete="CASCADE"),
+        db.ForeignKey("discount_coupon.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )

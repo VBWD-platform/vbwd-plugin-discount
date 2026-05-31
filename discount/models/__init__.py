@@ -1,5 +1,5 @@
 from plugins.discount.discount.models.discount import (
-    Discount,
+    DiscountRule,
     DiscountType,
     DiscountScope,
 )
@@ -8,7 +8,7 @@ from plugins.discount.discount.models.coupon_usage import CouponUsage
 from plugins.discount.discount.models.discount_application import DiscountApplication
 
 __all__ = [
-    "Discount",
+    "DiscountRule",
     "DiscountType",
     "DiscountScope",
     "Coupon",

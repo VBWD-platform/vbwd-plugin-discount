@@ -7,12 +7,12 @@ from vbwd.models.base import BaseModel
 class Coupon(BaseModel):
     """Coupon code linked to a discount rule."""
 
-    __tablename__ = "coupon"
+    __tablename__ = "discount_coupon"
 
     code = db.Column(db.String(50), nullable=False, unique=True, index=True)
     discount_id = db.Column(
         UUID(as_uuid=True),
-        db.ForeignKey("discount.id", ondelete="CASCADE"),
+        db.ForeignKey("discount_rule.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )

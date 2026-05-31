@@ -7,7 +7,7 @@ from vbwd.extensions import db
 from vbwd.middleware.auth import require_auth, require_admin, require_permission
 
 from plugins.discount.discount.models.discount import (
-    Discount,
+    DiscountRule,
     DiscountType,
     DiscountScope,
 )
@@ -104,7 +104,7 @@ def admin_create_discount():
     if repo.find_by_slug(slug):
         return jsonify({"error": f"Discount with slug '{slug}' already exists"}), 400
 
-    discount = Discount(
+    discount = DiscountRule(
         id=uuid4(),
         name=data["name"],
         slug=slug,

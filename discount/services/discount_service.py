@@ -9,7 +9,7 @@ from vbwd.utils.datetime_utils import utcnow
 from plugins.discount.discount.interfaces import DiscountContext, DiscountScope
 from plugins.discount.discount.models.coupon import Coupon
 from plugins.discount.discount.models.coupon_usage import CouponUsage
-from plugins.discount.discount.models.discount import Discount
+from plugins.discount.discount.models.discount import DiscountRule
 from plugins.discount.discount.models.discount_application import DiscountApplication
 from plugins.discount.discount.registry import DiscountRuleRegistry
 from plugins.discount.discount.repositories.coupon_repository import CouponRepository
@@ -78,7 +78,7 @@ class DiscountService:
 
         discount = self._discount_repo.find_by_id(coupon.discount_id)
         if not discount or not discount.is_active:
-            raise CouponValidationError("Discount is not available")
+            raise CouponValidationError("DiscountRule is not available")
 
         if discount.min_order_amount and cart_total < discount.min_order_amount:
             raise CouponValidationError(
@@ -89,7 +89,7 @@ class DiscountService:
 
     def calculate_discount(
         self,
-        discount: Discount,
+        discount: DiscountRule,
         line_item_type: str,
         line_item_extra_data: dict,
         unit_price: Decimal,
@@ -176,7 +176,7 @@ class DiscountService:
     def get_applicable_discounts(
         self,
         scope: Optional[DiscountScope] = None,
-    ) -> list[Discount]:
+    ) -> list[DiscountRule]:
         """Get all active discounts for a scope, checking date range."""
         discounts = self._discount_repo.find_active(scope)
         now = utcnow()

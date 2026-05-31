@@ -6,7 +6,7 @@ feedback_no_direct_db_for_test_data.md) and asserts the row is fetchable
 both by slug and through the active-listing filter.
 
 Sized to be the cheapest assertion that defends:
-  - the SQLAlchemy mapper for Discount + the two enums
+  - the SQLAlchemy mapper for DiscountRule + the two enums
   - the discount conftest wiring (test DB, create_all, drop_all)
   - DiscountRepository.save() committing rather than just flushing
 """
@@ -14,7 +14,7 @@ from decimal import Decimal
 from uuid import uuid4
 
 from plugins.discount.discount.models.discount import (
-    Discount,
+    DiscountRule,
     DiscountScope,
     DiscountType,
 )
@@ -26,7 +26,7 @@ from plugins.discount.discount.repositories.discount_repository import (
 def test_discount_save_then_round_trips_through_real_db(db):
     repository = DiscountRepository(db.session)
 
-    new_discount = Discount(
+    new_discount = DiscountRule(
         id=uuid4(),
         name="Smoke Welcome 10",
         slug="smoke-welcome-10",

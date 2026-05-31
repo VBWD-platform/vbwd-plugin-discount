@@ -1,4 +1,4 @@
-"""Discount model — the rule definition."""
+"""DiscountRule model — the rule definition."""
 import enum
 
 from sqlalchemy.dialects.postgresql import JSONB
@@ -20,10 +20,10 @@ class DiscountScope(str, enum.Enum):
     BOOKING = "BOOKING"
 
 
-class Discount(BaseModel):
-    """Discount rule — percentage, fixed amount, free shipping, or buy-X-get-Y."""
+class DiscountRule(BaseModel):
+    """DiscountRule rule — percentage, fixed amount, free shipping, or buy-X-get-Y."""
 
-    __tablename__ = "discount"
+    __tablename__ = "discount_rule"
 
     name = db.Column(db.String(255), nullable=False)
     slug = db.Column(db.String(255), nullable=False, unique=True, index=True)
@@ -97,4 +97,4 @@ class Discount(BaseModel):
         }
 
     def __repr__(self) -> str:
-        return f"<Discount(name='{self.name}', type={self.discount_type.value}, scope={self.scope.value})>"
+        return f"<DiscountRule(name='{self.name}', type={self.discount_type.value}, scope={self.scope.value})>"

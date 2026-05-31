@@ -11,7 +11,7 @@ class DiscountApplication(BaseModel):
 
     discount_id = db.Column(
         UUID(as_uuid=True),
-        db.ForeignKey("discount.id", ondelete="CASCADE"),
+        db.ForeignKey("discount_rule.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -36,7 +36,7 @@ class DiscountApplication(BaseModel):
     final_amount = db.Column(db.Numeric(10, 2), nullable=False)
     coupon_id = db.Column(
         UUID(as_uuid=True),
-        db.ForeignKey("coupon.id", ondelete="SET NULL"),
+        db.ForeignKey("discount_coupon.id", ondelete="SET NULL"),
         nullable=True,
     )
 

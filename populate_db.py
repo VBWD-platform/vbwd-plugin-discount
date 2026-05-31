@@ -1,4 +1,4 @@
-"""Discount plugin demo data — idempotent seeder."""
+"""DiscountRule plugin demo data — idempotent seeder."""
 import logging
 from decimal import Decimal
 from uuid import uuid4
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 def populate(app=None):
     """Populate discount demo data (idempotent)."""
     from plugins.discount.discount.models.discount import (
-        Discount,
+        DiscountRule,
         DiscountType,
         DiscountScope,
     )
@@ -82,10 +82,10 @@ def populate(app=None):
     discount_map = {}
     for discount_data in discounts_data:
         existing = (
-            db.session.query(Discount).filter_by(slug=discount_data["slug"]).first()
+            db.session.query(DiscountRule).filter_by(slug=discount_data["slug"]).first()
         )
         if not existing:
-            discount = Discount(id=uuid4(), **discount_data)
+            discount = DiscountRule(id=uuid4(), **discount_data)
             db.session.add(discount)
             db.session.flush()
             discount_map[discount_data["slug"]] = discount
