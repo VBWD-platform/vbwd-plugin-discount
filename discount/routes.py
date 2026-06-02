@@ -51,6 +51,9 @@ def validate_coupon():
     data = request.get_json() or {}
     code = data.get("code", "").strip()
     cart_total = Decimal(str(data.get("cart_total", "0")))
+    # Optional checkout scope (SUBSCRIPTION / ECOMMERCE) — validation mirrors the
+    # checkout adjustment so the FE preview matches what submit will accept.
+    scope = data.get("scope")
 
     if not code:
         return jsonify({"error": "Coupon code is required"}), 400
@@ -58,14 +61,36 @@ def validate_coupon():
     user_id = getattr(g, "user_id", None)
 
     try:
-        coupon = _service().validate_coupon(code, user_id, cart_total)
+        service = _service()
+        coupon = service.validate_coupon(code, user_id, cart_total)
         discount = DiscountRepository(db.session).find_by_id(coupon.discount_id)
+        if (
+            scope
+            and discount
+            and discount.scope != DiscountScope.GLOBAL
+            and discount.scope.value != scope
+        ):
+            return (
+                jsonify(
+                    {
+                        "valid": False,
+                        "error": "This coupon is not valid for this checkout",
+                    }
+                ),
+                200,
+            )
+        discount_amount = (
+            service.compute_discount_amount(discount, cart_total)
+            if discount
+            else Decimal("0")
+        )
         return (
             jsonify(
                 {
                     "valid": True,
                     "coupon": coupon.to_dict(),
                     "discount": discount.to_dict() if discount else None,
+                    "discount_amount": str(discount_amount),
                 }
             ),
             200,

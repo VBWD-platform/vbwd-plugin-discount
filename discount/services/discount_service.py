@@ -117,6 +117,41 @@ class DiscountService:
 
         return amount
 
+    def compute_discount_amount(
+        self,
+        discount: DiscountRule,
+        subtotal: Decimal,
+    ) -> Decimal:
+        """Compute the money off a checkout subtotal for a flat (whole-cart)
+        discount — the scope-independent path the checkout adjustment uses.
+
+        Unlike :meth:`calculate_discount` (which routes through the per-line
+        ``DiscountRuleRegistry`` and only has a default for GLOBAL scope), this
+        applies the rule's own ``discount_type`` + ``value`` directly so a
+        SUBSCRIPTION/ECOMMERCE coupon reduces the price with no registered rule.
+        Only the two cart-reducing types are honoured; FREE_SHIPPING /
+        BUY_X_GET_Y are not subtotal reductions (→ 0). Capped at
+        ``max_discount_amount`` and never more than the subtotal.
+        """
+        if subtotal <= 0:
+            return Decimal("0")
+
+        discount_type = discount.discount_type.value
+        if discount_type == "PERCENTAGE":
+            amount = (subtotal * discount.value / Decimal("100")).quantize(
+                Decimal("0.01")
+            )
+        elif discount_type == "FIXED_AMOUNT":
+            amount = discount.value
+        else:
+            return Decimal("0")
+
+        if discount.max_discount_amount and amount > discount.max_discount_amount:
+            amount = discount.max_discount_amount
+        if amount > subtotal:
+            amount = subtotal
+        return amount
+
     def redeem_coupon(
         self,
         coupon: Coupon,

@@ -69,8 +69,23 @@ class DiscountPlugin(BasePlugin):
         # Import models to register with SQLAlchemy
         import plugins.discount.discount.models  # noqa: F401
 
+        # Bridge coupon math to both checkouts through the generic core port
+        # (no core/other-plugin import in either direction).
+        from vbwd.services.checkout_price_adjustment_registry import (
+            register_price_adjustment,
+        )
+        from plugins.discount.discount.checkout_adjustment import (
+            checkout_price_adjustment,
+        )
+
+        register_price_adjustment("discount", checkout_price_adjustment)
+
     def on_disable(self):
-        pass
+        from vbwd.services.checkout_price_adjustment_registry import (
+            unregister_price_adjustment,
+        )
+
+        unregister_price_adjustment("discount")
 
     def get_blueprint(self):
         from plugins.discount.discount.routes import discount_bp
