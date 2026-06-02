@@ -14,9 +14,14 @@ _EXPECTED_CODES = {"SUMMER2026", "WELCOME5", "FREESHIP", "SUB30", "EARLYBIRD"}
 
 @pytest.fixture(autouse=True)
 def _email_template_table(db):
-    # populate() also seeds the email-template catalog (cross-plugin); make sure
-    # its table exists in the discount test DB.
-    import plugins.email.src.models.email_template  # noqa: F401
+    # populate() seeds the email-template catalog when the optional email plugin
+    # is installed; register its table so create_all() builds it. The email
+    # plugin is absent in isolated plugin CI (and populate() guards its import),
+    # so tolerate its absence — the discount seeding still runs and is asserted.
+    try:
+        import plugins.email.src.models.email_template  # noqa: F401
+    except ImportError:
+        pass
 
     db.create_all()
 
