@@ -65,6 +65,28 @@ class DiscountPlugin(BasePlugin):
             },
         ]
 
+    def _register_data_exchangers(self) -> None:
+        """Register the discount entity exchangers into the data-exchange seam.
+
+        Core declares none of these (it stays agnostic); the plugin adds them on
+        enable through the shared ``db.session`` so discount rules and coupons
+        appear on the generic Settings → Import/Export page. Clear-safe:
+        re-registering replaces by key (per-test app re-enable).
+        """
+        import logging
+
+        try:
+            from vbwd.extensions import db
+            from plugins.discount.discount.services.data_exchange.discount_exchangers import (  # noqa: E501
+                register_discount_exchangers,
+            )
+
+            register_discount_exchangers(db.session)
+        except Exception as exchanger_error:
+            logging.getLogger(__name__).warning(
+                "[discount] Failed to register data exchangers: %s", exchanger_error
+            )
+
     def on_enable(self):
         # Import models to register with SQLAlchemy
         import plugins.discount.discount.models  # noqa: F401
@@ -79,6 +101,8 @@ class DiscountPlugin(BasePlugin):
         )
 
         register_price_adjustment("discount", checkout_price_adjustment)
+
+        self._register_data_exchangers()
 
     def on_disable(self):
         from vbwd.services.checkout_price_adjustment_registry import (
