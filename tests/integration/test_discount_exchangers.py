@@ -15,7 +15,7 @@ DRY; Liskov; no overengineering. Quality guard: ``bin/pre-commit-check.sh
 """
 import uuid
 
-from vbwd.services.data_exchange.envelope import build_envelope
+from vbwd.services.data_exchange.envelope import build_envelope, rows_to_csv
 from vbwd.services.data_exchange.port import CLUSTER_SALES, ExportSelector
 from plugins.discount.discount.models.coupon import Coupon
 from plugins.discount.discount.models.discount import (
@@ -92,6 +92,17 @@ class TestCouponsRoundTrip:
         assert rebuilt is not None
         assert rebuilt.max_uses == 100
         assert str(rebuilt.discount_id) == str(rule.id)
+
+
+class TestCsvExport:
+    def test_discount_rules_csv_export(self, db):
+        rule = _seed_rule(db)
+        exchanger = _exchangers(db.session)["discount_rules"]
+        assert "csv" in exchanger.supported_formats
+        rows = exchanger.export(ExportSelector(ids=[rule.slug]), include_pii=False).rows
+        csv_text = rows_to_csv(rows)
+        assert "slug" in csv_text.splitlines()[0]
+        assert rule.slug in csv_text
 
 
 class TestRegistration:

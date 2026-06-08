@@ -120,6 +120,7 @@ def build_discount_exchangers(session: Any) -> List[EntityExchanger]:
                 "stackable",
                 "priority",
             ],
+            supported_formats=frozenset({"json", "csv"}),
             view_permission=PERM_DISCOUNTS_VIEW,
             manage_permission=PERM_DISCOUNTS_MANAGE,
         ),
