@@ -10,6 +10,7 @@ degrades to full price (Liskov null-default).
 from decimal import Decimal
 from uuid import UUID
 
+from vbwd.events.bus import event_bus
 from vbwd.extensions import db
 from vbwd.services.checkout_price_adjustment_registry import PriceAdjustmentResult
 
@@ -38,6 +39,33 @@ def _build_service(session) -> DiscountService:
         coupon_repo=CouponRepository(session),
         usage_repo=CouponUsageRepository(session),
         application_repo=DiscountApplicationRepository(session),
+    )
+
+
+#: The additive redemption event name (S92 B2). Other plugins subscribe to it
+#: to react to a coupon redemption; discount only publishes.
+COUPON_REDEEMED_EVENT = "discount.coupon_redeemed"
+
+
+def _publish_coupon_redeemed(
+    *, coupon, user_ref, invoice_ref, discount_amount, sale_net_amount
+) -> None:
+    """Publish ``discount.coupon_redeemed`` with a plain-dict payload.
+
+    Payload is plain data (no domain objects) per the event-bus contract; all
+    ids are stringified so a subscriber re-parses to UUID. Failures in any
+    subscriber are swallowed by the bus, so the redemption itself never breaks.
+    """
+    event_bus.publish(
+        COUPON_REDEEMED_EVENT,
+        {
+            "coupon_id": str(coupon.id),
+            "coupon_code": coupon.code,
+            "user_id": str(user_ref),
+            "invoice_id": str(invoice_ref),
+            "discount_amount": str(discount_amount),
+            "sale_net_amount": str(sale_net_amount),
+        },
     )
 
 
@@ -102,6 +130,17 @@ def checkout_price_adjustment(
             original_amount=original_subtotal,
             discount_amount=amount,
             coupon_id=fresh_coupon.id,
+        )
+        # Additive domain signal (S92 B2): announce the redemption so other
+        # plugins (e.g. referral) can react — pay an issuer commission — without
+        # the discount plugin knowing they exist. The event bus inverts the
+        # dependency (Open/Closed); discount imports nothing referral-specific.
+        _publish_coupon_redeemed(
+            coupon=fresh_coupon,
+            user_ref=user_ref,
+            invoice_ref=invoice_ref,
+            discount_amount=amount,
+            sale_net_amount=original_subtotal,
         )
 
     return PriceAdjustmentResult(

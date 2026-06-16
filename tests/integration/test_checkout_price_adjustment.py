@@ -177,3 +177,54 @@ def test_on_committed_redeems_and_records_once(db):
     applications = DiscountApplicationRepository(db.session).find_by_invoice(invoice.id)
     assert len(applications) == 1
     assert applications[0].discount_amount == Decimal("30.00")
+
+
+def test_on_committed_publishes_coupon_redeemed_event(db):
+    """S92 B2 — the additive ``discount.coupon_redeemed`` signal fires on commit
+    with the expected payload, without changing the redemption behaviour."""
+    from vbwd.events.bus import event_bus
+
+    user = _seed_user(db.session)
+    _discount, coupon = _seed_discount_and_coupon(
+        db.session,
+        code="EVENT20",
+        scope=DiscountScope.SUBSCRIPTION,
+        dtype=DiscountType.PERCENTAGE,
+        value="20.00",
+    )
+    invoice = UserInvoice(
+        id=uuid4(),
+        user_id=user.id,
+        invoice_number=f"INV-{uuid4().hex[:8]}",
+        amount=Decimal("80.00"),
+    )
+    db.session.add(invoice)
+    db.session.commit()
+
+    captured = []
+
+    def _capture(event_name, data):
+        captured.append((event_name, data))
+
+    event_bus.subscribe("discount.coupon_redeemed", _capture)
+    try:
+        result = checkout_price_adjustment(
+            code="EVENT20",
+            subtotal=Decimal("100.00"),
+            user_id=str(user.id),
+            scope="SUBSCRIPTION",
+            currency="EUR",
+        )
+        assert result.valid is True
+        result.on_committed(str(invoice.id), str(user.id))
+    finally:
+        event_bus.unsubscribe("discount.coupon_redeemed", _capture)
+
+    assert len(captured) == 1
+    _name, payload = captured[0]
+    assert payload["coupon_code"] == "EVENT20"
+    assert payload["coupon_id"] == str(coupon.id)
+    assert payload["user_id"] == str(user.id)
+    assert payload["invoice_id"] == str(invoice.id)
+    assert payload["discount_amount"] == "20.00"
+    assert payload["sale_net_amount"] == "100.00"
