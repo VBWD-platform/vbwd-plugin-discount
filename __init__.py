@@ -21,7 +21,7 @@ class DiscountPlugin(BasePlugin):
     def metadata(self) -> PluginMetadata:
         return PluginMetadata(
             name="discount",
-            version="0.1.0",
+            version="26.6",
             description="Unified discount & coupon system",
             author="VBWD",
             dependencies=[],
