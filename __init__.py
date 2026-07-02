@@ -1,5 +1,5 @@
 """Discount plugin — unified discount & coupon system."""
-from vbwd.plugins.base import BasePlugin, PluginMetadata
+from vbwd.plugins.base import BasePlugin, PluginMetadata, PublicRouteDeclaration
 
 from plugins.discount.discount.registry import DiscountRuleRegistry
 
@@ -110,6 +110,14 @@ class DiscountPlugin(BasePlugin):
         )
 
         unregister_price_adjustment("discount")
+
+    def declare_public_routes(self) -> PublicRouteDeclaration:
+        """Public coupon validation for checkout (read-like, nothing persisted)."""
+        return PublicRouteDeclaration(
+            mutation={
+                "/api/v1/coupons/validate": "Public coupon validation for checkout (read-like, no mutation persisted).",
+            },
+        )
 
     def get_blueprint(self):
         from plugins.discount.discount.routes import discount_bp
