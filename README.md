@@ -30,3 +30,12 @@ Releases are tagged (e.g. `v26.6`); see [`CHANGELOG.md`](./CHANGELOG.md).
 Business Source License 1.1 — see [`LICENSE`](./LICENSE). Free for commercial
 use while annual VBWD-attributable sales stay below the value of 6.7 BTC for the
 reporting year; above that, a commercial license is required.
+
+## Documentation
+
+Full platform documentation lives at **[vbwd.cc/docs](https://vbwd.cc/docs)**.
+
+- [Plugin system](https://vbwd.cc/docs-plugin-system) — how backend plugins are registered, enabled, and configured
+- [Discounts](https://vbwd.cc/docs-core-discount) — documentation for this plugin's domain
+- [Architecture](https://vbwd.cc/docs-architecture) — platform layering and the core-agnosticism rule
+- [Getting started](https://vbwd.cc/docs-getting-started) — install a VBWD instance and enable plugins
